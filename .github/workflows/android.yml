@@ -2,7 +2,7 @@ name: Build Topaz AI Mobile
 
 on:
   push:
-    branches: [principal]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
