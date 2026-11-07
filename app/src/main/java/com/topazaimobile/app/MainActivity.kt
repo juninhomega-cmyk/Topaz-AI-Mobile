@@ -1,12 +1,16 @@
+
 package com.topazaimobile.app
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +28,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TopazApp() {
+    var selectedVideo by remember { mutableStateOf<Uri?>(null) }
+
+    val videoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        selectedVideo = uri
+    }
+
     MaterialTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -60,7 +72,9 @@ fun TopazApp() {
                 Spacer(modifier = Modifier.height(25.dp))
 
                 Button(
-                    onClick = {},
+                    onClick = {
+                        videoPicker.launch("video/*")
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),
@@ -69,9 +83,28 @@ fun TopazApp() {
                     Text("Selecionar vídeo")
                 }
 
+                selectedVideo?.let { uri ->
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        "Vídeo selecionado!",
+                        color = Color(0xFF9B78FF),
+                        fontSize = 16.sp
+                    )
+
+                    Text(
+                        uri.lastPathSegment ?: "Arquivo selecionado",
+                        color = Color.White,
+                        fontSize = 12.sp
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(35.dp))
 
-                Text("FERRAMENTAS DE IA", color = Color.Gray)
+                Text(
+                    "FERRAMENTAS DE IA",
+                    color = Color.Gray
+                )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -80,7 +113,7 @@ fun TopazApp() {
                     "AI Face Recovery",
                     "AI Denoise",
                     "AI Frame Interpolation"
-                ).forEach {
+                ).forEach { tool ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -90,7 +123,7 @@ fun TopazApp() {
                         )
                     ) {
                         Text(
-                            it,
+                            tool,
                             color = Color.White,
                             modifier = Modifier.padding(18.dp)
                         )
